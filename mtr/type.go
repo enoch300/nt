@@ -24,6 +24,18 @@ const DEFAULT_TIMEOUT_MS = 800
 const DEFAULT_PACKET_SIZE = 56
 const DEFAULT_SNT_SIZE = 10
 
+type Hop struct {
+	RouteNo int     `json:"route_num"`
+	Addr    string  `json:"addr"`
+	Loss    float32 `json:"loss"`
+	Snt     int     `json:"snt"`
+	Last    float32 `json:"last"`
+	Avg     float32 `json:"avg"`
+	Best    float32 `json:"best"`
+	Wrst    float32 `json:"wrst"`
+	StDev   float64 `json:"stdev"`
+}
+
 type MtrReturn struct {
 	Success  bool
 	TTL      int

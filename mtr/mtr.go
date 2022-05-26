@@ -9,18 +9,6 @@ import (
 	"github.com/enoch300/nettool/icmp"
 )
 
-type Hop struct {
-	RouteNo int     `json:"route_num"`
-	Addr    string  `json:"addr"`
-	Loss    float32 `json:"loss"`
-	Snt     int     `json:"snt"`
-	Last    float32 `json:"last"`
-	Avg     float32 `json:"avg"`
-	Best    float32 `json:"best"`
-	Wrst    float32 `json:"wrst"`
-	StDev   float64 `json:"stdev"`
-}
-
 // Mtr 执行traceroute操作 新增ipv6操作
 func Mtr(ipAddr string, maxHops, sntSize, timeoutMs int) (result string, hops []Hop, err error) {
 	options := MtrOptions{}
