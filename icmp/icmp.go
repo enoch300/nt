@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/ipv4"
 	"golang.org/x/net/ipv6"
 
-	"github.com/enoch300/nettool/common"
+	"github.com/enoch300/nt/common"
 )
 
 const (

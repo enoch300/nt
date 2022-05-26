@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/enoch300/nettool/common"
-	"github.com/enoch300/nettool/icmp"
+	"github.com/enoch300/nt/common"
+	"github.com/enoch300/nt/icmp"
 )
 
 // Mtr 执行traceroute操作 新增ipv6操作

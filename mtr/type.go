@@ -16,7 +16,7 @@ package mtr
 import (
 	"time"
 
-	"github.com/enoch300/nettool/common"
+	"github.com/enoch300/nt/common"
 )
 
 const DEFAULT_MAX_HOPS = 30

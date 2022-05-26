@@ -3,8 +3,8 @@ package ping
 import (
 	"bytes"
 	"fmt"
-	"github.com/enoch300/nettool/common"
-	"github.com/enoch300/nettool/icmp"
+	"github.com/enoch300/nt/common"
+	"github.com/enoch300/nt/icmp"
 	"time"
 )
 

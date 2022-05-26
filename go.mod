@@ -1,4 +1,4 @@
-module github.com/enoch300/nettool
+module github.com/enoch300/nt
 
 go 1.17
 
