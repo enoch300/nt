@@ -75,7 +75,7 @@ func runPing(ipAddr string, option *PingOptions) (pingReturn PingReturn) {
 	}
 
 	pingReturn.Success = pingResult.success
-	pingReturn.DropRate = float64(option.Count()-pingResult.succSum) / float64(option.Count())
+	pingReturn.DropRate = float64(option.Count()-pingResult.succSum) / float64(option.Count()) * 100
 	pingReturn.AvgTime = pingResult.avgTime
 	pingReturn.BestTime = pingResult.bestTime
 	pingReturn.WrstTime = pingResult.wrstTime
