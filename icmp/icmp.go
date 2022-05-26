@@ -18,17 +18,22 @@ const (
 	ProtocolIPv6ICMP = 58 // ICMP for IPv6
 )
 
-func Icmp(destAddr string, ttl, pid int, timeout time.Duration, seq int) (hop common.IcmpReturn, err error) {
-	ip := net.ParseIP(destAddr)
-	if ip == nil {
-		return hop, fmt.Errorf("ip: %v is invalid", destAddr)
+func Icmp(srcAddr string, destAddr string, ttl, pid int, timeout time.Duration, seq int) (hop common.IcmpReturn, err error) {
+	destIp := net.ParseIP(destAddr)
+	if destIp == nil {
+		return hop, fmt.Errorf("dest ip: %v is invalid", destAddr)
 	}
-	ipAddr := net.IPAddr{IP: ip}
 
-	if p4 := ip.To4(); len(p4) == net.IPv4len {
-		return icmpIpv4("0.0.0.0", &ipAddr, ttl, pid, timeout, seq)
+	srcIp := net.ParseIP(srcAddr)
+	if srcIp == nil {
+		return hop, fmt.Errorf("src ip: %v is invalid", srcAddr)
+	}
+
+	ipAddr := net.IPAddr{IP: destIp}
+	if p4 := destIp.To4(); len(p4) == net.IPv4len {
+		return icmpIpv4(srcAddr, &ipAddr, ttl, pid, timeout, seq)
 	} else {
-		return icmpIpv6("::", &ipAddr, ttl, pid, timeout, seq)
+		return icmpIpv6(srcAddr, &ipAddr, ttl, pid, timeout, seq)
 	}
 }
 

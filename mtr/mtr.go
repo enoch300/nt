@@ -10,7 +10,7 @@ import (
 )
 
 // Mtr 执行traceroute操作 新增ipv6操作
-func Mtr(ipAddr string, maxHops, sntSize, timeoutMs int) (result string, hops []Hop, err error) {
+func Mtr(srcAddr string, destAddr string, maxHops, sntSize, timeoutMs int) (result string, hops []Hop, err error) {
 	options := MtrOptions{}
 	options.SetMaxHops(maxHops)
 	options.SetSntSize(sntSize)
@@ -18,8 +18,8 @@ func Mtr(ipAddr string, maxHops, sntSize, timeoutMs int) (result string, hops []
 
 	var out MtrResult
 	var buffer bytes.Buffer
-	buffer.WriteString(fmt.Sprintf("Start: %v, DestAddr: %v\n", time.Now().Format("2006-01-02 15:04:05"), ipAddr))
-	out, err = runMtr(ipAddr, &options)
+	buffer.WriteString(fmt.Sprintf("Start: %v, FROM %v -> %v\n", time.Now().Format("2006-01-02 15:04:05"), srcAddr, destAddr))
+	out, err = runMtr(srcAddr, destAddr, &options)
 
 	if err == nil {
 		if len(out.Hops) == 0 {
@@ -71,7 +71,7 @@ func Mtr(ipAddr string, maxHops, sntSize, timeoutMs int) (result string, hops []
 }
 
 // mtr的实现
-func runMtr(destAddr string, options *MtrOptions) (result MtrResult, err error) {
+func runMtr(srcAddr string, destAddr string, options *MtrOptions) (result MtrResult, err error) {
 	result.Hops = []common.IcmpHop{}
 	result.DestAddress = destAddr
 
@@ -91,7 +91,7 @@ func runMtr(destAddr string, options *MtrOptions) (result MtrResult, err error) 
 				mtrResults[ttl] = &MtrReturn{TTL: ttl, Host: "???", SuccSum: 0, Success: false, LastTime: time.Duration(0), AllTime: time.Duration(0), BestTime: time.Duration(0), WrstTime: time.Duration(0), AvgTime: time.Duration(0)}
 			}
 
-			hopReturn, err := icmp.Icmp(destAddr, ttl, pid, timeout, seq)
+			hopReturn, err := icmp.Icmp(srcAddr, destAddr, ttl, pid, timeout, seq)
 			if err != nil || !hopReturn.Success {
 				if unkownHopCount == unkownHopMax {
 					break

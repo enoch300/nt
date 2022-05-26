@@ -28,6 +28,8 @@ type PingResult struct {
 }
 
 type PingOptions struct {
+	srcAddr    string
+	destAddr   string
 	count      int
 	timeoutMs  int
 	intervalMs int
@@ -39,6 +41,22 @@ func (options *PingOptions) Count() int {
 		options.count = DEFAULT_COUNT
 	}
 	return options.count
+}
+
+func (options *PingOptions) SetSrcAddr(srcAddr string) {
+	options.srcAddr = srcAddr
+}
+
+func (options *PingOptions) SrcAddr() (srcAddr string) {
+	return options.srcAddr
+}
+
+func (options *PingOptions) SetDestAddr(destAddr string) {
+	options.destAddr = destAddr
+}
+
+func (options *PingOptions) DestAddr() (destAddr string) {
+	return options.destAddr
 }
 
 func (options *PingOptions) SetCount(count int) {
