@@ -35,12 +35,15 @@ func Mtr(srcAddr string, destAddr string, maxHops, sntSize, timeoutMs int) (resu
 
 	// 根据原生的linux mtr结果，格式化mtr输出
 	var hop_str string
+	var hopObj []Hop
 	var last_hop int
 	for index, hop := range out.Hops {
 		if hop.Success {
 			if hop_str != "" {
 				buffer.WriteString(hop_str)
 				hop_str = ""
+				hops = append(hops, hopObj...)
+				hopObj = make([]Hop, 0)
 			}
 			buffer.WriteString(fmt.Sprintf("%-3d %-48v  %10.1f%c  %10v  %10.2f  %10.2f  %10.2f  %10.2f\n", hop.TTL, hop.Address, hop.Loss, '%', hop.Snt, common.Time2Float(hop.LastTime), common.Time2Float(hop.AvgTime), common.Time2Float(hop.BestTime), common.Time2Float(hop.WrstTime)))
 			last_hop = hop.TTL
@@ -57,8 +60,19 @@ func Mtr(srcAddr string, destAddr string, maxHops, sntSize, timeoutMs int) (resu
 		} else {
 			if index != len(out.Hops)-1 {
 				hop_str += fmt.Sprintf("%-3d %-48v  %10.1f%c  %10v  %10.2f  %10.2f  %10.2f  %10.2f\n", hop.TTL, "???", float32(100), '%', int(0), float32(0), float32(0), float32(0), float32(0))
+				hopObj = append(hopObj, Hop{
+					RouteNo: hop.TTL,
+					Addr:    hop.Address,
+					Loss:    hop.Loss,
+					Snt:     hop.Snt,
+					Last:    common.Time2Float(hop.LastTime),
+					Avg:     common.Time2Float(hop.AvgTime),
+					Best:    common.Time2Float(hop.BestTime),
+					Wrst:    common.Time2Float(hop.WrstTime),
+				})
 			} else {
 				last_hop++
+				buffer.WriteString(fmt.Sprintf("%-3d %-48v\n", last_hop, "???"))
 				hops = append(hops, Hop{
 					RouteNo: last_hop,
 					Addr:    hop.Address,
@@ -69,7 +83,6 @@ func Mtr(srcAddr string, destAddr string, maxHops, sntSize, timeoutMs int) (resu
 					Best:    common.Time2Float(hop.BestTime),
 					Wrst:    common.Time2Float(hop.WrstTime),
 				})
-				buffer.WriteString(fmt.Sprintf("%-3d %-48v\n", last_hop, "???"))
 			}
 		}
 	}
