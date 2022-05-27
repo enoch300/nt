@@ -42,7 +42,8 @@ func Mtr(srcAddr string, destAddr string, maxHops, sntSize, timeoutMs int) (resu
 				buffer.WriteString(hop_str)
 				hop_str = ""
 			}
-
+			buffer.WriteString(fmt.Sprintf("%-3d %-48v  %10.1f%c  %10v  %10.2f  %10.2f  %10.2f  %10.2f\n", hop.TTL, hop.Address, hop.Loss, '%', hop.Snt, common.Time2Float(hop.LastTime), common.Time2Float(hop.AvgTime), common.Time2Float(hop.BestTime), common.Time2Float(hop.WrstTime)))
+			last_hop = hop.TTL
 			hops = append(hops, Hop{
 				RouteNo: hop.TTL,
 				Addr:    hop.Address,
@@ -53,20 +54,25 @@ func Mtr(srcAddr string, destAddr string, maxHops, sntSize, timeoutMs int) (resu
 				Best:    common.Time2Float(hop.BestTime),
 				Wrst:    common.Time2Float(hop.WrstTime),
 			})
-
-			buffer.WriteString(fmt.Sprintf("%-3d %-48v  %10.1f%c  %10v  %10.2f  %10.2f  %10.2f  %10.2f\n", hop.TTL, hop.Address, hop.Loss, '%', hop.Snt, common.Time2Float(hop.LastTime), common.Time2Float(hop.AvgTime), common.Time2Float(hop.BestTime), common.Time2Float(hop.WrstTime)))
-			last_hop = hop.TTL
 		} else {
 			if index != len(out.Hops)-1 {
 				hop_str += fmt.Sprintf("%-3d %-48v  %10.1f%c  %10v  %10.2f  %10.2f  %10.2f  %10.2f\n", hop.TTL, "???", float32(100), '%', int(0), float32(0), float32(0), float32(0), float32(0))
 			} else {
 				last_hop++
+				hops = append(hops, Hop{
+					RouteNo: last_hop,
+					Addr:    hop.Address,
+					Loss:    hop.Loss,
+					Snt:     hop.Snt,
+					Last:    common.Time2Float(hop.LastTime),
+					Avg:     common.Time2Float(hop.AvgTime),
+					Best:    common.Time2Float(hop.BestTime),
+					Wrst:    common.Time2Float(hop.WrstTime),
+				})
 				buffer.WriteString(fmt.Sprintf("%-3d %-48v\n", last_hop, "???"))
 			}
-			hops = append(hops, Hop{RouteNo: hop.TTL, Addr: hop.Host, Loss: 100})
 		}
 	}
-
 	return buffer.String(), hops, nil
 }
 
@@ -81,23 +87,32 @@ func runMtr(srcAddr string, destAddr string, options *MtrOptions) (result MtrRes
 
 	mtrResults := make([]*MtrReturn, options.MaxHops()+1)
 
-	unkownHopMax := 6
+	unknownHopMax := 6
+
 	// 用于验证数据包
 	seq := 0
 	for snt := 0; snt < options.SntSize(); snt++ {
-		unkownHopCount := 0
+		unknownHopCount := 0
 		for ttl := 1; ttl < options.MaxHops(); ttl++ {
 			if mtrResults[ttl] == nil {
-				mtrResults[ttl] = &MtrReturn{TTL: ttl, Host: "???", SuccSum: 0, Success: false, LastTime: time.Duration(0), AllTime: time.Duration(0), BestTime: time.Duration(0), WrstTime: time.Duration(0), AvgTime: time.Duration(0)}
+				mtrResults[ttl] = &MtrReturn{
+					TTL: ttl, Host: "???",
+					SuccSum:  0,
+					Success:  false,
+					LastTime: time.Duration(0),
+					AllTime:  time.Duration(0),
+					BestTime: time.Duration(0),
+					WrstTime: time.Duration(0),
+					AvgTime:  time.Duration(0)}
 			}
 
 			hopReturn, err := icmp.Icmp(srcAddr, destAddr, ttl, pid, timeout, seq)
 			if err != nil || !hopReturn.Success {
-				if unkownHopCount == unkownHopMax {
+				if unknownHopCount == unknownHopMax {
 					break
 				}
 
-				unkownHopCount++
+				unknownHopCount++
 				continue
 			}
 
