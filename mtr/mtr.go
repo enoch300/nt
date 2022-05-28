@@ -128,6 +128,7 @@ func runMtr(srcAddr string, destAddr string, options *MtrOptions) (result MtrRes
 				unknownHopCount++
 				continue
 			}
+			unknownHopCount = 0
 
 			mtrResults[ttl].SuccSum = mtrResults[ttl].SuccSum + 1
 			mtrResults[ttl].Host = hopReturn.Addr
@@ -165,7 +166,7 @@ func runMtr(srcAddr string, destAddr string, options *MtrOptions) (result MtrRes
 		hop.LastTime = mtrResult.LastTime
 		failSum := options.SntSize() - mtrResult.SuccSum
 		loss := (float32)(failSum) / (float32)(options.SntSize()) * 100
-		hop.Loss = float32(loss)
+		hop.Loss = loss
 		hop.WrstTime = mtrResult.WrstTime
 		hop.Success = mtrResult.Success
 
