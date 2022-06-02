@@ -65,18 +65,17 @@ func runPing(srcAddr string, destAddr string, option *PingOptions) (pingReturn P
 		pingResult.success = true
 
 		seq++
-
 		time.Sleep(time.Duration(interval) * time.Millisecond)
 	}
 
-	if !pingResult.success {
-		pingReturn.Success = false
-		pingReturn.DropRate = 100.0
+	//if !pingResult.success {
+	//	pingReturn.Success = false
+	//	pingReturn.DropRate = 100.0
+	//
+	//	return
+	//}
+	//pingReturn.Success = pingResult.success
 
-		return
-	}
-
-	pingReturn.Success = pingResult.success
 	pingReturn.DropRate = float64(option.Count()-pingResult.succSum) / float64(option.Count()) * 100
 	pingReturn.AvgTime = pingResult.avgTime
 	pingReturn.BestTime = pingResult.bestTime
