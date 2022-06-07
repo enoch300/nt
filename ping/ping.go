@@ -50,7 +50,6 @@ func runPing(srcAddr string, destAddr string, option *PingOptions) (pingReturn P
 	for cnt := 0; cnt < option.Count(); cnt++ {
 		icmpReturn, err := icmp.Icmp(srcAddr, destAddr, ttl, pid, timeout, seq)
 		if err != nil || !icmpReturn.Success || !common.IsEqualIp(destAddr, icmpReturn.Addr) {
-			fmt.Println(err, !icmpReturn.Success, !common.IsEqualIp(destAddr, icmpReturn.Addr), destAddr, icmpReturn.Addr)
 			continue
 		}
 
